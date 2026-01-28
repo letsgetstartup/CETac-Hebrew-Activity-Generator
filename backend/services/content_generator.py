@@ -12,6 +12,7 @@ from logic.generator import VertexAIClient
 from models.content_models import ContentModel
 from models.request_models import GenerateActivityRequest
 from models.response_models import ActivityResponse, ErrorResponse, ValidationErrorResponse
+from models.adaptation import AdaptContentRequest, AdaptedContentResponse
 from pydantic import ValidationError
 
 logger = logging.getLogger(__name__)
@@ -116,4 +117,71 @@ class ContentGenerator:
             raise ve # Re-raise for outer handler or handle specially
         except Exception as e:
             logger.exception("Unexpected error during generation")
+            raise e
+
+    def adapt_content(self, request: AdaptContentRequest) -> AdaptedContentResponse:
+        """
+        Executes Prompt #3: Adapts existing content for struggling students.
+        """
+        # 1. Load the Configuration
+        config_path = self.prompt_manager.config_source.base_path / "special_needs" / "scaffolding_v1.json"
+        
+        try:
+            with open(config_path, 'r', encoding='utf-8') as f:
+                prompt_config = json.load(f)
+
+            # 2. Construct the Prompt Chain
+            system_instruction = prompt_config["system_prompt"]["role"]
+            task_instruction = "\n".join(prompt_config["system_prompt"]["instructions"])
+            
+            user_content = f"""
+            TASK: {prompt_config["system_prompt"]["objective"]}
+            
+            INPUT DATA:
+            ---
+            Original Text: {request.original_text}
+            Questions: {[q.dict() for q in request.original_questions]}
+            Student Needs: {request.student_needs}
+            ---
+            
+            OUTPUT FORMAT:
+            Return ONLY valid JSON matching this structure:
+            {json.dumps(prompt_config["system_prompt"]["output_schema"])}
+            """
+
+            full_prompt = f"{system_instruction}\n\n{task_instruction}\n\n{user_content}"
+
+            # 3. Call Vertex AI
+            raw_response = self.ai_client.generate_content(
+                prompt=full_prompt,
+                max_output_tokens=8192  # Sufficient for adaptation with reasoning headroom
+            )
+            
+            # 4. Parse & Validate
+            # Use the robust extraction
+            def extract_json(res_text: str) -> str:
+                res_text = res_text.strip()
+                start_idx = res_text.find('{')
+                if start_idx == -1:
+                    return res_text
+                
+                stack = []
+                for i in range(start_idx, len(res_text)):
+                    if res_text[i] == '{':
+                        stack.append('{')
+                    elif res_text[i] == '}':
+                        if stack:
+                            stack.pop()
+                            if not stack:
+                                return res_text[start_idx:i+1]
+                return res_text[start_idx:]
+
+            clean_json = extract_json(raw_response)
+            parsed_json = json.loads(clean_json)
+            validated_response = AdaptedContentResponse(**parsed_json)
+            
+            return validated_response
+
+        except Exception as e:
+            logger.error(f"Adaptation Error: {e}")
             raise e

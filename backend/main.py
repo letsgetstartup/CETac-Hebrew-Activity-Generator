@@ -12,6 +12,7 @@ from config import get_settings
 from models.request_models import GenerateActivityRequest
 from models.response_models import ErrorResponse, ValidationErrorResponse
 from services.content_generator import ContentGenerator
+from models.adaptation import AdaptContentRequest
 
 # Initialize Firebase Admin
 initialize_app()
@@ -108,6 +109,69 @@ def generate_activity(req: https_fn.Request) -> https_fn.Response:
                 message=f"An unexpected error occurred: {str(e)}",
                 details={"traceback": traceback.format_exc()}
             ).model_dump()),
+            status=500,
+            headers=cors_headers,
+            mimetype="application/json"
+        )
+
+@https_fn.on_request(
+    memory=options.MemoryOption.GB_1,
+    timeout_sec=120,
+    region=options.SupportedRegion.US_CENTRAL1,
+)
+def adapt_activity(req: https_fn.Request) -> https_fn.Response:
+    """
+    API Endpoint: Adapt content for special needs.
+    Method: POST
+    """
+    # 1. CORS Headers
+    cors_headers = {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type",
+    }
+
+    if req.method == "OPTIONS":
+        return https_fn.Response("", status=204, headers=cors_headers)
+
+    if req.method != "POST":
+        return https_fn.Response(
+            json.dumps({"error": "METHOD_NOT_ALLOWED", "message": "Only POST allowed"}),
+            status=405, 
+            headers=cors_headers,
+            mimetype="application/json"
+        )
+
+    try:
+        # 2. Parse Request
+        try:
+            req_json = req.get_json(silent=True)
+            if not req_json:
+                raise ValueError("Missing JSON body")
+            request_model = AdaptContentRequest(**req_json)
+        except (ValueError, ValidationError) as e:
+            return https_fn.Response(
+                json.dumps({"error": "BAD_REQUEST", "details": e.errors() if isinstance(e, ValidationError) else str(e)}),
+                status=400,
+                headers=cors_headers,
+                mimetype="application/json"
+            )
+
+        # 3. Call Service
+        result = content_generator.adapt_content(request_model)
+
+        # 4. Return Success
+        return https_fn.Response(
+            json.dumps(result.model_dump()),
+            status=200,
+            headers=cors_headers,
+            mimetype="application/json"
+        )
+
+    except Exception as e:
+        logger.error(f"Adaptation Error: {e}")
+        return https_fn.Response(
+            json.dumps({"error": "INTERNAL_ERROR", "message": str(e)}),
             status=500,
             headers=cors_headers,
             mimetype="application/json"
