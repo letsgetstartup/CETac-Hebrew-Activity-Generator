@@ -37,3 +37,21 @@ export const generateActivity = async (request: GenerateRequest): Promise<Activi
         };
     }
 };
+
+export const adaptActivity = async (request: any): Promise<any> => {
+    try {
+        const response = await fetch("/api/adapt", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(request),
+        });
+
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error("Adaptation Call Failed:", error);
+        return { error: "Network error", message: String(error) };
+    }
+};

@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
-import { generateActivity } from '../api';
-import type { ContentModel } from '../types';
+import { generateActivity, adaptActivity } from '../api';
+import type { ContentModel, AdaptedContentResponse, VocabularyItem, Question, GlossaryItem, ScaffoldedQuestion } from '../types';
 
 const ActivityGenerator: React.FC = () => {
     const [topic, setTopic] = useState('');
     const [level, setLevel] = useState<'A1' | 'A2' | 'B1'>('A1');
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState<ContentModel | null>(null);
+    const [adaptedResult, setAdaptedResult] = useState<AdaptedContentResponse | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const [adaptedLoading, setAdaptedLoading] = useState(false);
 
     const handleGenerate = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -22,6 +24,23 @@ const ActivityGenerator: React.FC = () => {
 
             if (response.success && response.data) {
                 setResult(response.data);
+
+                // --- Task #3: Trigger Scaffolding ---
+                setAdaptedLoading(true);
+                try {
+                    const adaptation = await adaptActivity({
+                        original_text: response.data.text_content,
+                        original_questions: response.data.questions.map(q => ({ id: q.id, text: q.stem_hebrew })),
+                        student_needs: "general_difficulty"
+                    });
+                    if (adaptation && !adaptation.error) {
+                        setAdaptedResult(adaptation);
+                    }
+                } catch (e) {
+                    console.error("Scaffolding failed", e);
+                } finally {
+                    setAdaptedLoading(false);
+                }
             } else {
                 setError(response.message || response.error || 'Unknown error occurred');
             }
@@ -139,7 +158,7 @@ const ActivityGenerator: React.FC = () => {
                             </div>
                             <div className="p-0">
                                 <ul className="divide-y divide-slate-100">
-                                    {result.vocabulary_list.map((word, idx) => (
+                                    {result.vocabulary_list.map((word: VocabularyItem, idx: number) => (
                                         <li key={idx} className="px-6 py-3 flex justify-between items-center hover:bg-slate-50 transition-colors">
                                             <span className="text-sm text-slate-500 font-medium">{word.english}</span>
                                             <span className="text-lg font-bold text-slate-800" dir="rtl">{word.hebrew}</span>
@@ -155,7 +174,7 @@ const ActivityGenerator: React.FC = () => {
                                 <h4 className="font-bold text-slate-700">Comprehension Questions</h4>
                             </div>
                             <div className="p-6 space-y-6">
-                                {result.questions.map((q, idx) => (
+                                {result.questions.map((q: Question, idx: number) => (
                                     <div key={q.id} className="bg-slate-50 rounded-lg p-4" dir="rtl">
                                         <div className="flex items-start gap-2 mb-2">
                                             <span className="bg-emerald-100 text-emerald-700 text-xs px-2 py-0.5 rounded font-bold">
@@ -164,7 +183,7 @@ const ActivityGenerator: React.FC = () => {
                                             <p className="font-bold text-slate-800 text-lg">{q.stem_hebrew}</p>
                                         </div>
                                         <div className="mr-8 grid grid-cols-2 gap-2">
-                                            {q.options.map((opt, optIdx) => (
+                                            {q.options.map((opt: string, optIdx: number) => (
                                                 <div
                                                     key={optIdx}
                                                     className={`
@@ -184,6 +203,101 @@ const ActivityGenerator: React.FC = () => {
                             </div>
                         </div>
                     </div>
+
+                    {/* --- Task #3: Pedagogical Scaffolding Section --- */}
+                    {(adaptedLoading || adaptedResult) && (
+                        <div className="pt-12 border-t-2 border-dashed border-slate-200 mt-12">
+                            <div className="flex items-center gap-3 mb-8">
+                                <div className="p-2 bg-indigo-100 rounded-lg">
+                                    <svg className="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 className="text-2xl font-bold text-slate-900">Pedagogical Scaffolding (Task #3)</h3>
+                                    <p className="text-slate-500">Accessible version for students with reading difficulties</p>
+                                </div>
+                            </div>
+
+                            {adaptedLoading ? (
+                                <div className="flex flex-col items-center justify-center p-12 bg-white rounded-xl border border-slate-100 border-dashed">
+                                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mb-4"></div>
+                                    <p className="text-slate-600 font-medium">Adapting content for special needs...</p>
+                                    <p className="text-slate-400 text-sm mt-1">Simplifying syntax and generating cognitive hints</p>
+                                </div>
+                            ) : adaptedResult && (
+                                <div className="space-y-8 animate-fade-in-up">
+                                    {/* Simplified Text */}
+                                    <div className="bg-indigo-50/50 rounded-2xl p-8 border border-indigo-100">
+                                        <div className="flex justify-between items-center mb-6">
+                                            <span className="px-3 py-1 bg-indigo-100 text-indigo-700 text-xs font-bold uppercase rounded-full">Simplified Text</span>
+                                            <span className="text-indigo-400 text-sm italic font-medium px-4 py-1 bg-white rounded-full shadow-sm border border-indigo-50">High Frequency SVO Structure</span>
+                                        </div>
+                                        <p className="text-3xl leading-[1.8] font-serif text-slate-800 text-right whitespace-pre-wrap" dir="rtl">
+                                            {adaptedResult.simplified_text}
+                                        </p>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                                        {/* Glossary Card */}
+                                        <div className="lg:col-span-1 bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden self-start">
+                                            <div className="bg-slate-50 px-6 py-4 border-b border-slate-200 flex items-center gap-2">
+                                                <span className="bg-white p-1.5 rounded-md shadow-sm border border-slate-200">
+                                                    <svg className="h-4 w-4 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                                    </svg>
+                                                </span>
+                                                <h4 className="font-bold text-slate-800">Support Glossary</h4>
+                                            </div>
+                                            <div className="p-0">
+                                                {adaptedResult.glossary.map((item: GlossaryItem, idx: number) => (
+                                                    <div key={idx} className="px-6 py-4 hover:bg-slate-50 transition-colors border-b border-slate-50 last:border-0" dir="rtl">
+                                                        <div className="font-bold text-indigo-600 text-lg mb-1">{item.term}</div>
+                                                        <div className="text-slate-600 text-sm leading-relaxed">{item.definition}</div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        {/* Cognitive Hints */}
+                                        <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                                            <div className="bg-slate-50 px-6 py-4 border-b border-slate-200 flex items-center gap-2">
+                                                <span className="bg-white p-1.5 rounded-md shadow-sm border border-slate-200">
+                                                    <svg className="h-4 w-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0012 18.75c-1.03 0-1.9-.4-2.511-1.033l-.552-.547z" />
+                                                    </svg>
+                                                </span>
+                                                <h4 className="font-bold text-slate-800">Question Scaffolding & Hints</h4>
+                                            </div>
+                                            <div className="p-6 space-y-6">
+                                                {adaptedResult.scaffolded_questions.map((hint: ScaffoldedQuestion, idx: number) => (
+                                                    <div key={hint.original_id} className="group relative" dir="rtl">
+                                                        <div className="flex gap-4">
+                                                            <div className="flex-shrink-0 w-10 h-10 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center font-bold border border-indigo-100 group-hover:bg-indigo-600 group-hover:text-white transition-all">
+                                                                {idx + 1}
+                                                            </div>
+                                                            <div className="flex-grow pt-1.5">
+                                                                <div className="bg-amber-50 text-amber-900 px-4 py-3 rounded-xl border-2 border-amber-100 mb-3 shadow-sm relative">
+                                                                    <span className="font-bold ml-2">רמז:</span>
+                                                                    {hint.hint}
+                                                                </div>
+                                                                <div className="text-slate-500 text-xs flex items-center gap-2 pr-2">
+                                                                    <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                                    </svg>
+                                                                    תמיכה קוגניטיבית: {hint.cognitive_support}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    )}
                 </div>
             )}
         </div>

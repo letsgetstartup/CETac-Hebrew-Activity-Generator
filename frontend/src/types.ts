@@ -34,3 +34,28 @@ export interface GenerateRequest {
     level: "A1" | "A2" | "B1" | "B2" | "C1";
     variant?: string;
 }
+
+// --- Adaptation Types (Task #3) ---
+
+export interface GlossaryItem {
+    term: string;
+    definition: string;
+}
+
+export interface ScaffoldedQuestion {
+    original_id: number;
+    hint: string;
+    cognitive_support: string;
+}
+
+export interface AdaptedContentResponse {
+    simplified_text: string;
+    glossary: GlossaryItem[];
+    scaffolded_questions: ScaffoldedQuestion[];
+}
+
+export interface AdaptRequest {
+    original_text: string;
+    original_questions: { id: number; text: string }[];
+    student_needs?: string;
+}

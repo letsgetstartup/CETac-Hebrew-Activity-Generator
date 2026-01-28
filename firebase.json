@@ -24,6 +24,10 @@
                 "function": "generate_activity"
             },
             {
+                "source": "/api/adapt",
+                "function": "adapt_activity"
+            },
+            {
                 "source": "**",
                 "destination": "/index.html"
             }
