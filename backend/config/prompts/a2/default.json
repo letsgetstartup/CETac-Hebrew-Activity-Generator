@@ -1,6 +1,6 @@
 {
     "level": "A2",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "author": "CETac Team",
     "created_at": "2026-01-28T00:00:00Z",
     "description": "Default A2 configuration - Elementary level with past tense introduction",
@@ -37,7 +37,7 @@
     },
     "generation_config": {
         "temperature": 0.35,
-        "max_output_tokens": 2000,
+        "max_output_tokens": 8192,
         "top_p": 0.95,
         "top_k": 40
     },

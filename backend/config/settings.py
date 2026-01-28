@@ -21,9 +21,9 @@ class Settings(BaseSettings):
     gemini_api_key: Optional[str] = None
     
     # Vertex AI
-    vertex_ai_model: str = "gemini-1.5-flash-001"
+    vertex_ai_model: str = "gemini-2.5-pro"
     vertex_ai_temperature: float = 0.3
-    vertex_ai_max_tokens: int = 2048
+    vertex_ai_max_tokens: int = 16384
     
     # Firebase
     firebase_database_url: Optional[str] = None

@@ -1,6 +1,6 @@
 {
     "level": "B1",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "author": "CETac Team",
     "created_at": "2026-01-28T00:00:00Z",
     "description": "Default B1 configuration - Intermediate level with all tenses and complex syntax",
@@ -43,7 +43,7 @@
     },
     "generation_config": {
         "temperature": 0.4,
-        "max_output_tokens": 2500,
+        "max_output_tokens": 8192,
         "top_p": 0.95,
         "top_k": 50
     },

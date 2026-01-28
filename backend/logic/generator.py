@@ -91,6 +91,7 @@ class VertexAIClient:
         
         try:
             logger.info(f"Calling Vertex AI API: {self.model_name}")
+            logger.debug(f"Request Payload: {json.dumps(payload)}")
             response = requests.post(
                 url,
                 params=params,
@@ -102,14 +103,29 @@ class VertexAIClient:
             response.raise_for_status()
             result = response.json()
             
+            # Log the full result for debugging (masked API keys/sensitive info if any)
+            logger.debug(f"Vertex AI Full Response: {json.dumps(result)}")
+            
             # Extract text from response
             if "candidates" in result and len(result["candidates"]) > 0:
                 candidate = result["candidates"][0]
+                
+                # Check finish reason
+                finish_reason = candidate.get("finishReason")
+                if finish_reason and finish_reason != "STOP":
+                    logger.warning(f"Generation finished with reason: {finish_reason}")
+                
                 if "content" in candidate and "parts" in candidate["content"]:
                     text = candidate["content"]["parts"][0].get("text", "")
+                    if not text:
+                        logger.warning("Model returned empty text part")
                     return text
+                else:
+                    logger.error(f"No content or parts in candidate: {candidate}")
+            else:
+                logger.error(f"No candidates found in result. Safety ratings: {result.get('promptFeedback', {}).get('safetyRatings', [])}")
             
-            raise ValueError(f"Unexpected response format: {result}")
+            raise ValueError(f"Model failed to generate content. Format: {result}")
             
         except requests.exceptions.RequestException as e:
             logger.error(f"Vertex AI API request failed: {e}")

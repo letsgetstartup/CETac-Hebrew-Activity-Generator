@@ -1,6 +1,6 @@
 {
     "level": "A1",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "author": "CETac Team",
     "created_at": "2026-01-28T00:00:00Z",
     "description": "Default A1 configuration - Beginner level with present tense only",
@@ -20,7 +20,7 @@
             "PLURAL_FEMININE"
         ]
     },
-    "system_prompt_template": "אתה מורה מומחה לעברית כשפה שנייה, מתמחה בהור אות מתחילים ברמת CEFR A1.\n\nתפקידך: ליצור פעילות לימודית בנושא '{{ topic }}' המותאמת למתחילים אמריקים בגילאי 6-14.\n\nאילוצים קריטיים שעליך לקיים:\n1. השתמש רק בזמן הווה - אסור להשתמש בעבר, עתיד או ציווי\n2. השתמש אך ורק בבניין פעל (קל) - שמות פועל נפוצים בלבד\n3. משפטים פשוטים - נושא + נשוא, מקסימום 10 מילים למשפט\n4. אוצר מילים בסיסי - משפחה, כיתה, חיות, צבעים, מספרים 1-100\n5. כל מילה עברית חייבת להיות מנוקדת באופן מלא ומדויק\n6. השתמש במבנים: 'יש/אין', 'קוראים ל...', 'זה/זאת', 'אני/אתה/הוא'\n\nשפה והטון:\n- טון חברי ומעודד, לא פורמלי\n- הימנע ממושגים מופשטים או תרבותיים מורכבים\n- התמקד בחוויות יומיומיות של ילדים\n\nמבנה השאלות:\n- 2 שאלות זכירה (\"מי\", \"מה\", \"איפה\")\n- 2 שאלות הבנה (\"למה\", \"איך\")\n- 1 שאלת יישום (\"מה היית עושה...\")\n\nחשוב מאוד: החזר JSON בפורמט המדויק הזה:\n{\n  \"title_hebrew\": \"כותרת בעברית מנוקדת\",\n  \"cefr_level\": \"A1\",\n  \"text_content\": \"הטקסט המלא בעברית מנוקדת (50-200 מילים)\",\n  \"vocabulary_list\": [\n    {\"hebrew\": \"מִלָּה\", \"english\": \"Word\"},\n    {\"hebrew\": \"דּוּגְמָה\", \"english\": \"Example\"}\n  ],\n  \"questions\": [\n    {\n      \"id\": 1,\n      \"stem_hebrew\": \"השאלה בעברית?\",\n      \"options\": [\"תשובה 1\", \"תשובה 2\", \"תשובה 3\", \"תשובה 4\"],\n      \"correct_answer_index\": 0,\n      \"explanation\": \"הסבר מפורט בעברית\",\n      \"cognitive_level\": \"Remembering\"\n    }\n  ]\n}\n\nשמות השדות חייבים להיות באנגלית בדיוק כפי שמוצג למעלה. רמות Bloom אפשריות: Remembering, Understanding, Applying.\"",
+    "system_prompt_template": "KEEP YOUR THOUGHTS VERY CONCISE. DO NOT SPEND MORE THAN 500 TOKENS ON REASONING. PROVIDE THE JSON OBJECT IMMEDIATELY AFTER BRIEF ANALYSIS.\n\nאתה מורה מומחה לעברית כשפה שנייה, מתמחה בהוראת מתחילים ברמת CEFR A1.\n\nתפקידך: ליצור פעילות לימודית בנושא '{{ topic }}' המותאמת למתחילים אמריקים בגילאי 6-14.\n\nאילוצים קריטיים שעליך לקיים:\n1. השתמש רק בזמן הווה - אסור להשתמש בעבר, עתיד או ציווי\n2. השתמש אך ורק בבניין פעל (קל) - שמות פועל נפוצים בלבד\n3. משפטים פשוטים - נושא + נשוא, מקסימום 10 מילים למשפט\n4. אוצר מילים בסיסי - משפחה, כיתה, חיות, צבעים, מספרים 1-100\n5. כל מילה עברית חייבת להיות מנוקדת באופן מלא ומדויק\n6. השתמש במבנים: 'יש/אין', 'קוראים ל...', 'זה/זאת', 'אני/אתה/הוא'\n\nשפה והטון:\n- טון חברי ומעודד, לא פורמלי\n- הימנע ממושגים מופשטים או תרבותיים מורכבים\n- התמקד בחוויות יומיומיות של ילדים\n\nמבנה השאלות:\n- 2 שאלות זכירה (\"מי\", \"מה\", \"איפה\")\n- 2 שאלות הבנה (\"למה\", \"איך\")\n- 1 שאלת יישום (\"מה היית עושה...\")\n\nחשוב מאוד: החזר JSON בפורמט המדויק הזה:\n{\n  \"title_hebrew\": \"כותרת בעברית מנוקדת\",\n  \"cefr_level\": \"A1\",\n  \"text_content\": \"הטקסט המלא בעברית מנוקדת (50-200 מילים)\",\n  \"vocabulary_list\": [\n    {\"hebrew\": \"מִלָּה\", \"english\": \"Word\"},\n    {\"hebrew\": \"דּוּגְמָה\", \"english\": \"Example\"}\n  ],\n  \"questions\": [\n    {\n      \"id\": 1,\n      \"stem_hebrew\": \"השאלה בעברית?\",\n      \"options\": [\"תשובה 1\", \"תשובה 2\", \"תשובה 3\", \"תשובה 4\"],\n      \"correct_answer_index\": 0,\n      \"explanation\": \"הסבר מפורט בעברית\",\n      \"cognitive_level\": \"Remembering\"\n    }\n  ]\n}\n\nשמות השדות חייבים להיות באנגלית בדיוק כפי שמוצג למעלה. רמות Bloom אפשריות: Remembering, Understanding, Applying.\n\nIMPORTANT: Return ONLY valid JSON. Do not include any other text, markdown formatting blocks, or preamble. Return the JSON object directly.\",",
     "vocabulary_whitelist": [
         "file://shared/vocab/a1_core_500.txt"
     ],
@@ -81,7 +81,7 @@
     },
     "generation_config": {
         "temperature": 0.3,
-        "max_output_tokens": 1500,
+        "max_output_tokens": 8192,
         "top_p": 0.95,
         "top_k": 40
     },

@@ -54,10 +54,10 @@ class ContentGenerator:
             temperature = gen_config.temperature if gen_config else None
             max_tokens = gen_config.max_output_tokens if gen_config else None
 
-            # Get schema from Pydantic model
-            # response_schema = ContentModel.model_json_schema()
-            # Note: Disabled schema enforcement to avoid $defs compatibility issues with GenAI SDK. 
-            # We rely on response_mime_type="application/json" and manual validation.
+            # Ensure minimum tokens for Pro/Reasoning models to avoid truncation
+            if max_tokens and max_tokens < 4096:
+                logger.warning(f"Increasing max_tokens from {max_tokens} to 4096 for safety")
+                max_tokens = 4096
 
             raw_response = self.ai_client.generate_content(
                 prompt=system_prompt,
@@ -67,27 +67,35 @@ class ContentGenerator:
             )
 
             # 4. Validate Response
-            # Clean up potential markdown code blocks if the model behaves unexpectedly (though response_mime_type should fix this)
-            clean_json = raw_response.strip()
-            if clean_json.startswith("```json"):
-                clean_json = clean_json[7:-3].strip()
-            elif clean_json.startswith("```"):
-                clean_json = clean_json[3:-3].strip()
+            # Hyper-robust JSON extraction using stack-based bracket counting
+            def extract_json(res_text: str) -> str:
+                res_text = res_text.strip()
+                start_idx = res_text.find('{')
+                if start_idx == -1:
+                    return res_text
+                
+                stack = []
+                for i in range(start_idx, len(res_text)):
+                    if res_text[i] == '{':
+                        stack.append('{')
+                    elif res_text[i] == '}':
+                        if stack:
+                            stack.pop()
+                            if not stack:
+                                return res_text[start_idx:i+1]
+                return res_text[start_idx:]
+
+            clean_json = extract_json(raw_response)
 
             try:
                 content_data = json.loads(clean_json)
                 validated_content = ContentModel(**content_data)
-                
-                # Retrieve vocabulary list from prompt config for additional validation/enrichment if needed
-                # (Logic can be added here to warn if generated vocab isn't in allowlist)
-
             except json.JSONDecodeError as e:
-                logger.error(f"JSON Decode Error: {e}, Raw: {raw_response[:100]}...")
-                raise ValueError("Model returned invalid JSON")
+                logger.error(f"JSON Decode Error: {e}, Raw: {raw_response}")
+                raise ValueError("The AI model returned an unexpected format. Please try again.")
             except ValidationError as e:
                 logger.error(f"Content Validation Failed: {e}")
-                # In a production system, we might retry here with a correction prompt
-                raise e
+                raise ValueError("The generated content did not pass pedagogical validation. Please try again.")
 
             # 5. Return Response
             duration_ms = int((time.time() - start_time) * 1000)
