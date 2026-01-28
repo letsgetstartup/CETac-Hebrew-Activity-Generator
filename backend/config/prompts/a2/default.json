@@ -1,0 +1,50 @@
+{
+    "level": "A2",
+    "version": "1.0.0",
+    "author": "CETac Team",
+    "created_at": "2026-01-28T00:00:00Z",
+    "description": "Default A2 configuration - Elementary level with past tense introduction",
+    "morphological_constraints": {
+        "allowed_tenses": [
+            "PRESENT",
+            "PAST"
+        ],
+        "allowed_binyanim": [
+            "PAAL",
+            "PIEL",
+            "HIFIL"
+        ],
+        "max_sentence_length": 15,
+        "niqqud_required": true,
+        "allowed_gender_forms": [
+            "MASCULINE",
+            "FEMININE",
+            "PLURAL_MASCULINE",
+            "PLURAL_FEMININE"
+        ]
+    },
+    "system_prompt_template": "אתה מורה מומחה לעברית כשפה שנייה, מתמחה בהוראת רמת CEFR A2.\n\nתפקידך: ליצור פעילות לימודית בנושא '{{ topic }}' המותאמת ללומדים אמריקאים ברמה יסודית.\n\nאילוצים קריטיים:\n1. זמנים מותרים: הווה ועבר בלבד - אסור עתיד\n2. בניינים מותרים: פעל, פיעל, הפעיל - הימנע מבניינים כבדים יותר\n3. משפטים: עד 15 מילים, מותר חיבור פשוט עם 'ו', 'אבל', 'כי'\n4. אוצר מילים: סדר היום, קניות, מזג אוויר, חגים ישראליים בסיסיים\n5. ניקוד מלא חובה\n6. הטיות מילות יחס: שלי, שלך, שלו (לימוד חדש ברמה זו)\n\nמבנה תוכן:\n- סיפור קצר בזמן עבר על חוויה יומיומית\n- שילוב דיאלוג קצר (2-3 משפטים)\n- התייחסות לרגשות בסיסיים (שמח, עצוב, עייף)\n\nמבנה שאלות:\n- 2 שאלות זכירה\n- 2 שאלות הבנה (סיבה ותוצאה)\n- 1 שאלת יישום או ניתוח קל\n\nפלט: JSON תקני בלבד.",
+    "vocabulary_whitelist": [
+        "file://shared/vocab/a2_extended_1000.txt"
+    ],
+    "bloom_taxonomy_rules": {
+        "distribution": {
+            "Remembering": 0.4,
+            "Understanding": 0.4,
+            "Applying": 0.15,
+            "Analyzing": 0.05
+        }
+    },
+    "generation_config": {
+        "temperature": 0.35,
+        "max_output_tokens": 2000,
+        "top_p": 0.95,
+        "top_k": 40
+    },
+    "validation_rules": {
+        "min_text_length": 100,
+        "max_text_length": 300,
+        "min_questions": 5,
+        "max_questions": 5
+    }
+}

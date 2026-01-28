@@ -1,0 +1,50 @@
+{
+    "functions": [
+        {
+            "source": "backend",
+            "codebase": "default",
+            "ignore": [
+                "venv",
+                ".git",
+                "__pycache__"
+            ],
+            "runtime": "python311"
+        }
+    ],
+    "hosting": {
+        "public": "frontend/dist",
+        "ignore": [
+            "firebase.json",
+            "**/.*",
+            "**/node_modules/**"
+        ],
+        "rewrites": [
+            {
+                "source": "/api/generate",
+                "function": "generate_activity"
+            },
+            {
+                "source": "**",
+                "destination": "/index.html"
+            }
+        ]
+    },
+    "firestore": {
+        "rules": "firestore.rules",
+        "indexes": "firestore.indexes.json"
+    },
+    "emulators": {
+        "auth": {
+            "port": 9099
+        },
+        "functions": {
+            "port": 5001
+        },
+        "firestore": {
+            "port": 8080
+        },
+        "ui": {
+            "enabled": true
+        }
+    }
+}

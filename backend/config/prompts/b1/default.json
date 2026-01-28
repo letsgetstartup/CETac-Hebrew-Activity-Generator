@@ -1,0 +1,56 @@
+{
+    "level": "B1",
+    "version": "1.0.0",
+    "author": "CETac Team",
+    "created_at": "2026-01-28T00:00:00Z",
+    "description": "Default B1 configuration - Intermediate level with all tenses and complex syntax",
+    "morphological_constraints": {
+        "allowed_tenses": [
+            "PRESENT",
+            "PAST",
+            "FUTURE",
+            "IMPERATIVE"
+        ],
+        "allowed_binyanim": [
+            "PAAL",
+            "NIFAL",
+            "PIEL",
+            "PUAL",
+            "HIFIL",
+            "HUFAL",
+            "HITPAEL"
+        ],
+        "max_sentence_length": 20,
+        "niqqud_required": false,
+        "allowed_gender_forms": [
+            "MASCULINE",
+            "FEMININE",
+            "PLURAL_MASCULINE",
+            "PLURAL_FEMININE"
+        ]
+    },
+    "system_prompt_template": "אתה מורה מומחה לעברית כשפה שנייה, מתמחה בהוראת רמת CEFR B1.\n\nתפקידך: ליצור פעילות לימודית בנושא '{{ topic }}' המותאמת ללומדים ברמה בינונית.\n\nמאפייני הרמה:\n1. כל הזמנים מותרים: הווה, עבר, עתיד, ציווי\n2. כל שבעת הבניינים מותרים, כולל סביל (נפעל, פועל)\n3. משפטים מורכבים: שעבוד (\"הילד שראיתי...\"), פסוקיות סיבה ותכלית\n4. אוצר מילים: אקטואליה, תרבות ישראלית, הבעת דעות\n5. ניקוד חלקי בלבד - רק למילים דו-משמעיות או קשות\n6. שמות פעולה ומבנים מופשטים\n\nסגנון:\n- טקסטים אינפורמטיביים או ארגומנטטיביים קלים\n- הבעת עמדה אישית (\"לדעתי\", \"אני חושב ש...\")\n- אוצר מילים של מדע פופולרי, היסטוריה, טכנולוגיה\n\nמבנה שאלות:\n- 1 שאלת זכירה\n- 2 שאלות הבנה\n- 1 שאלת יישום\n- 1 שאלת ניתוח/הערכה\n\nפלט: JSON תקני.",
+    "vocabulary_whitelist": [
+        "file://shared/vocab/b1_advanced_2500.txt"
+    ],
+    "bloom_taxonomy_rules": {
+        "distribution": {
+            "Remembering": 0.2,
+            "Understanding": 0.4,
+            "Applying": 0.2,
+            "Analyzing": 0.2
+        }
+    },
+    "generation_config": {
+        "temperature": 0.4,
+        "max_output_tokens": 2500,
+        "top_p": 0.95,
+        "top_k": 50
+    },
+    "validation_rules": {
+        "min_text_length": 200,
+        "max_text_length": 500,
+        "min_questions": 5,
+        "max_questions": 5
+    }
+}

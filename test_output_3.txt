@@ -1,0 +1,46 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.11.9, pytest-8.3.2, pluggy-1.6.0 -- /Users/avirammizrahi/.pyenv/versions/3.11.9/bin/python3
+cachedir: .pytest_cache
+rootdir: /Users/avirammizrahi/Desktop/cet
+plugins: anyio-4.12.1, asyncio-0.23.8
+asyncio: mode=Mode.STRICT
+collecting ... collected 5 items
+
+tests/unit/test_content_generator.py::test_generate_activity_success FAILED [ 20%]
+tests/unit/test_prompt_manager.py::test_load_config_success PASSED       [ 40%]
+tests/unit/test_prompt_manager.py::test_render_system_prompt PASSED      [ 60%]
+tests/unit/test_prompt_manager.py::test_config_not_found PASSED          [ 80%]
+tests/unit/test_prompt_manager.py::test_template_rendering_error PASSED  [100%]
+
+=================================== FAILURES ===================================
+________________________ test_generate_activity_success ________________________
+
+mock_ai_client = <MagicMock id='5032604048'>
+mock_prompt_manager = <MagicMock id='5032630800'>
+
+    def test_generate_activity_success(mock_ai_client, mock_prompt_manager):
+        generator = ContentGenerator(
+            prompt_manager=mock_prompt_manager,
+            ai_client=mock_ai_client
+        )
+    
+        request = GenerateActivityRequest(topic="Dog", level="A1")
+    
+        # Update regex replacement for the longer text
+        valid_hebrew_response = MOCK_GEMINI_RESPONSE.replace(
+            "זה כלב חמוד מאוד. הכלב אוהב לאכול בשר. הכלב אוהב לישון בבית. יש לכלב זנב ארוך ושחור. אני אוהב את הכלב שלי מאוד.",
+            "זֶה כֶּלֶב חָמוּד מְאוֹד. הַכֶּלֶב אוֹהֵב לֶאֱכוֹל בָּשָׂר. הַכֶּלֶב אוֹהֵב לִישׁוֹן בַּבַּיִת. יֵשׁ לַכֶּלֶב זָנָב אָרוֹךְ וְשָׁחוֹר. אֲנִי אוֹהֵב אֶת הַכֶּלֶב שֶׁלִּי מְאוֹד."
+        )
+        mock_ai_client.generate_content.return_value = valid_hebrew_response
+    
+        response = generator.generate_activity(request)
+    
+        assert isinstance(response, ActivityResponse)
+        assert response.success is True
+>       assert response.data.title_hebrew == "כלב חמוד" (truncated)
+E       NameError: name 'truncated' is not defined
+
+tests/unit/test_content_generator.py:86: NameError
+=========================== short test summary info ============================
+FAILED tests/unit/test_content_generator.py::test_generate_activity_success
+========================= 1 failed, 4 passed in 2.07s ==========================

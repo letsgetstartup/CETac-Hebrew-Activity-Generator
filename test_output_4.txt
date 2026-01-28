@@ -1,0 +1,15 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.11.9, pytest-8.3.2, pluggy-1.6.0 -- /Users/avirammizrahi/.pyenv/versions/3.11.9/bin/python3
+cachedir: .pytest_cache
+rootdir: /Users/avirammizrahi/Desktop/cet
+plugins: anyio-4.12.1, asyncio-0.23.8
+asyncio: mode=Mode.STRICT
+collecting ... collected 5 items
+
+tests/unit/test_content_generator.py::test_generate_activity_success PASSED [ 20%]
+tests/unit/test_prompt_manager.py::test_load_config_success PASSED       [ 40%]
+tests/unit/test_prompt_manager.py::test_render_system_prompt PASSED      [ 60%]
+tests/unit/test_prompt_manager.py::test_config_not_found PASSED          [ 80%]
+tests/unit/test_prompt_manager.py::test_template_rendering_error PASSED  [100%]
+
+============================== 5 passed in 1.96s ===============================

@@ -1,0 +1,51 @@
+Python executable: /Users/avirammizrahi/.pyenv/versions/3.11.9/bin/python3
+PYTHONPATH: :.:.:.
+CWD: /Users/avirammizrahi/Desktop/cet
+Pydantic version: 2.12.5
+Traceback (most recent call last):
+  File "/Users/avirammizrahi/Desktop/cet/debug_imports.py", line 12, in <module>
+    import vertexai
+  File "/Users/avirammizrahi/.pyenv/versions/3.11.9/lib/python3.11/site-packages/vertexai/__init__.py", line 20, in <module>
+    from google.cloud.aiplatform import version as aiplatform_version
+  File "/Users/avirammizrahi/.pyenv/versions/3.11.9/lib/python3.11/site-packages/google/cloud/aiplatform/__init__.py", line 24, in <module>
+    from google.cloud.aiplatform import initializer
+  File "/Users/avirammizrahi/.pyenv/versions/3.11.9/lib/python3.11/site-packages/google/cloud/aiplatform/initializer.py", line 35, in <module>
+    from google.cloud.aiplatform import compat
+  File "/Users/avirammizrahi/.pyenv/versions/3.11.9/lib/python3.11/site-packages/google/cloud/aiplatform/compat/__init__.py", line 18, in <module>
+    from google.cloud.aiplatform.compat import services
+  File "/Users/avirammizrahi/.pyenv/versions/3.11.9/lib/python3.11/site-packages/google/cloud/aiplatform/compat/services/__init__.py", line 18, in <module>
+    from google.cloud.aiplatform_v1beta1.services.dataset_service import (
+  File "/Users/avirammizrahi/.pyenv/versions/3.11.9/lib/python3.11/site-packages/google/cloud/aiplatform_v1beta1/__init__.py", line 31, in <module>
+    from .services.dataset_service import DatasetServiceClient
+  File "/Users/avirammizrahi/.pyenv/versions/3.11.9/lib/python3.11/site-packages/google/cloud/aiplatform_v1beta1/services/dataset_service/__init__.py", line 16, in <module>
+    from .client import DatasetServiceClient
+  File "/Users/avirammizrahi/.pyenv/versions/3.11.9/lib/python3.11/site-packages/google/cloud/aiplatform_v1beta1/services/dataset_service/client.py", line 86, in <module>
+    from .transports.base import DatasetServiceTransport, DEFAULT_CLIENT_INFO
+  File "/Users/avirammizrahi/.pyenv/versions/3.11.9/lib/python3.11/site-packages/google/cloud/aiplatform_v1beta1/services/dataset_service/transports/__init__.py", line 19, in <module>
+    from .base import DatasetServiceTransport
+  File "/Users/avirammizrahi/.pyenv/versions/3.11.9/lib/python3.11/site-packages/google/cloud/aiplatform_v1beta1/services/dataset_service/transports/base.py", line 26, in <module>
+    from google.api_core import operations_v1
+  File "/Users/avirammizrahi/.pyenv/versions/3.11.9/lib/python3.11/site-packages/google/api_core/operations_v1/__init__.py", line 17, in <module>
+    from google.api_core.operations_v1.abstract_operations_client import AbstractOperationsClient
+  File "/Users/avirammizrahi/.pyenv/versions/3.11.9/lib/python3.11/site-packages/google/api_core/operations_v1/abstract_operations_client.py", line 22, in <module>
+    from google.api_core.operations_v1.transports.base import (
+  File "/Users/avirammizrahi/.pyenv/versions/3.11.9/lib/python3.11/site-packages/google/api_core/operations_v1/transports/__init__.py", line 29, in <module>
+    from .rest_asyncio import AsyncOperationsRestTransport
+  File "/Users/avirammizrahi/.pyenv/versions/3.11.9/lib/python3.11/site-packages/google/api_core/operations_v1/transports/rest_asyncio.py", line 24, in <module>
+    from google.auth.aio.transport.sessions import AsyncAuthorizedSession  # type: ignore
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/avirammizrahi/.pyenv/versions/3.11.9/lib/python3.11/site-packages/google/auth/aio/transport/sessions.py", line 27, in <module>
+    from google.auth.aio.transport.aiohttp import Request as AiohttpRequest
+  File "/Users/avirammizrahi/.pyenv/versions/3.11.9/lib/python3.11/site-packages/google/auth/aio/transport/aiohttp.py", line 23, in <module>
+    import aiohttp  # type: ignore
+    ^^^^^^^^^^^^^^
+  File "/Users/avirammizrahi/.pyenv/versions/3.11.9/lib/python3.11/site-packages/aiohttp/__init__.py", line 5, in <module>
+    from . import hdrs as hdrs
+  File "/Users/avirammizrahi/.pyenv/versions/3.11.9/lib/python3.11/site-packages/aiohttp/hdrs.py", line 8, in <module>
+    from multidict import istr
+  File "/Users/avirammizrahi/.pyenv/versions/3.11.9/lib/python3.11/site-packages/multidict/__init__.py", line 12, in <module>
+    from ._compat import USE_EXTENSIONS
+  File "/Users/avirammizrahi/.pyenv/versions/3.11.9/lib/python3.11/site-packages/multidict/_compat.py", line 12, in <module>
+    from . import _multidict  # type: ignore[attr-defined]  # noqa: F401
+    ^^^^^^^^^^^^^^^^^^^^^^^^
+KeyboardInterrupt

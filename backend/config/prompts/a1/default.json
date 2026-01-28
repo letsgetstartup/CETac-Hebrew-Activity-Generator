@@ -1,0 +1,94 @@
+{
+    "level": "A1",
+    "version": "1.0.0",
+    "author": "CETac Team",
+    "created_at": "2026-01-28T00:00:00Z",
+    "description": "Default A1 configuration - Beginner level with present tense only",
+    "morphological_constraints": {
+        "allowed_tenses": [
+            "PRESENT"
+        ],
+        "allowed_binyanim": [
+            "PAAL"
+        ],
+        "max_sentence_length": 10,
+        "niqqud_required": true,
+        "allowed_gender_forms": [
+            "MASCULINE",
+            "FEMININE",
+            "PLURAL_MASCULINE",
+            "PLURAL_FEMININE"
+        ]
+    },
+    "system_prompt_template": "אתה מורה מומחה לעברית כשפה שנייה, מתמחה בהור אות מתחילים ברמת CEFR A1.\n\nתפקידך: ליצור פעילות לימודית בנושא '{{ topic }}' המותאמת למתחילים אמריקים בגילאי 6-14.\n\nאילוצים קריטיים שעליך לקיים:\n1. השתמש רק בזמן הווה - אסור להשתמש בעבר, עתיד או ציווי\n2. השתמש אך ורק בבניין פעל (קל) - שמות פועל נפוצים בלבד\n3. משפטים פשוטים - נושא + נשוא, מקסימום 10 מילים למשפט\n4. אוצר מילים בסיסי - משפחה, כיתה, חיות, צבעים, מספרים 1-100\n5. כל מילה עברית חייבת להיות מנוקדת באופן מלא ומדויק\n6. השתמש במבנים: 'יש/אין', 'קוראים ל...', 'זה/זאת', 'אני/אתה/הוא'\n\nשפה והטון:\n- טון חברי ומעודד, לא פורמלי\n- הימנע ממושגים מופשטים או תרבותיים מורכבים\n- התמקד בחוויות יומיומיות של ילדים\n\nמבנה השאלות:\n- 2 שאלות זכירה (\"מי\", \"מה\", \"איפה\")\n- 2 שאלות הבנה (\"למה\", \"איך\")\n- 1 שאלת יישום (\"מה היית עושה...\")\n\nחשוב מאוד: החזר JSON בפורמט המדויק הזה:\n{\n  \"title_hebrew\": \"כותרת בעברית מנוקדת\",\n  \"cefr_level\": \"A1\",\n  \"text_content\": \"הטקסט המלא בעברית מנוקדת (50-200 מילים)\",\n  \"vocabulary_list\": [\n    {\"hebrew\": \"מִלָּה\", \"english\": \"Word\"},\n    {\"hebrew\": \"דּוּגְמָה\", \"english\": \"Example\"}\n  ],\n  \"questions\": [\n    {\n      \"id\": 1,\n      \"stem_hebrew\": \"השאלה בעברית?\",\n      \"options\": [\"תשובה 1\", \"תשובה 2\", \"תשובה 3\", \"תשובה 4\"],\n      \"correct_answer_index\": 0,\n      \"explanation\": \"הסבר מפורט בעברית\",\n      \"cognitive_level\": \"Remembering\"\n    }\n  ]\n}\n\nשמות השדות חייבים להיות באנגלית בדיוק כפי שמוצג למעלה. רמות Bloom אפשריות: Remembering, Understanding, Applying.\"",
+    "vocabulary_whitelist": [
+        "file://shared/vocab/a1_core_500.txt"
+    ],
+    "few_shot_examples": [
+        {
+            "topic": "My Dog",
+            "activity": {
+                "title_hebrew": "הַכֶּלֶב שֶׁלִי",
+                "cefr_level": "A1",
+                "text_content": "שָׁלוֹם, קוֹרְאִים לִי דָן. יֵשׁ לִי כֶּלֶב חָמוּד. לַכֶּלֶב קוֹרְאִים בּוֹבִּי. בּוֹבִּי אוֹהֵב לְשַׂחֵק בַּכַּדּוּר. בּוֹבִּי הוּא כֶּלֶב לָבָן וְקָטָן. אֲנִי אוֹהֵב אֶת בּוֹבִּי מְאוֹד.",
+                "vocabulary_list": [
+                    {
+                        "hebrew": "כֶּלֶב",
+                        "english": "Dog"
+                    },
+                    {
+                        "hebrew": "חָמוּד",
+                        "english": "Cute"
+                    },
+                    {
+                        "hebrew": "לְשַׂחֵק",
+                        "english": "To play"
+                    },
+                    {
+                        "hebrew": "כַּדּוּר",
+                        "english": "Ball"
+                    },
+                    {
+                        "hebrew": "לָבָן",
+                        "english": "White"
+                    }
+                ],
+                "questions": [
+                    {
+                        "id": 1,
+                        "stem_hebrew": "אֵיךְ קוֹרְאִים לַיֶּלֶד?",
+                        "options": [
+                            "דָן",
+                            "בּוֹבִּי",
+                            "יוֹסִי",
+                            "אַבָּא"
+                        ],
+                        "correct_answer_index": 0,
+                        "explanation": "בַּטֶּקְסְט כָּתוּב: 'קוֹרְאִים לִי דָן'.",
+                        "cognitive_level": "Remembering"
+                    }
+                ]
+            }
+        }
+    ],
+    "bloom_taxonomy_rules": {
+        "distribution": {
+            "Remembering": 0.4,
+            "Understanding": 0.4,
+            "Applying": 0.2,
+            "Analyzing": 0
+        }
+    },
+    "generation_config": {
+        "temperature": 0.3,
+        "max_output_tokens": 1500,
+        "top_p": 0.95,
+        "top_k": 40
+    },
+    "validation_rules": {
+        "min_text_length": 50,
+        "max_text_length": 200,
+        "min_questions": 5,
+        "max_questions": 5
+    }
+}

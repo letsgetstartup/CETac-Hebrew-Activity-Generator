@@ -1,0 +1,128 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.11.9, pytest-8.3.2, pluggy-1.6.0 -- /Users/avirammizrahi/.pyenv/versions/3.11.9/bin/python3
+cachedir: .pytest_cache
+rootdir: /Users/avirammizrahi/Desktop/cet
+plugins: anyio-4.12.1, asyncio-0.23.8
+asyncio: mode=Mode.STRICT
+collecting ... collected 5 items
+
+tests/unit/test_content_generator.py::test_generate_activity_success FAILED [ 20%]
+tests/unit/test_prompt_manager.py::test_load_config_success PASSED       [ 40%]
+tests/unit/test_prompt_manager.py::test_render_system_prompt PASSED      [ 60%]
+tests/unit/test_prompt_manager.py::test_config_not_found PASSED          [ 80%]
+tests/unit/test_prompt_manager.py::test_template_rendering_error PASSED  [100%]
+
+=================================== FAILURES ===================================
+________________________ test_generate_activity_success ________________________
+
+mock_ai_client = <MagicMock id='4729564880'>
+mock_prompt_manager = <MagicMock id='4729607888'>
+
+    def test_generate_activity_success(mock_ai_client, mock_prompt_manager):
+        generator = ContentGenerator(
+            prompt_manager=mock_prompt_manager,
+            ai_client=mock_ai_client
+        )
+    
+        request = GenerateActivityRequest(topic="Dog", level="A1")
+    
+        # We need to patch ContentModel validation because our mock hebrew might fail specific niqqud checks
+        # Or we can just ensure our mock data passes.
+        # Let's adjust mock data to pass validation or mock validation.
+        # Actually, the validation logic is in the model. Let's try to pass it with simple valid data.
+        # The current validation requires Hebrew chars. "כלב" has them.
+        # A1 requires niqqud. Our mock text "זה כלב חמוד..." has no niqqud.
+        # So Validation will fail.
+    
+        # Let's mock the return of the client to include niqqud.
+        valid_hebrew_response = MOCK_GEMINI_RESPONSE.replace(
+            "זה כלב חמוד. הכלב אוהב לאכול.",
+            "זֶה כֶּלֶב חָמוּד. הַכֶּלֶב אוֹהֵב לֶאֱכוֹל." # With Niqqud
+        )
+        mock_ai_client.generate_content.return_value = valid_hebrew_response
+    
+>       response = generator.generate_activity(request)
+
+tests/unit/test_content_generator.py:85: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+backend/services/content_generator.py:106: in generate_activity
+    raise ve # Re-raise for outer handler or handle specially
+backend/services/content_generator.py:88: in generate_activity
+    raise e
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <backend.services.content_generator.ContentGenerator object at 0x119e8a310>
+request = GenerateActivityRequest(topic='Dog', level='A1', variant='default', user_preferences=None)
+
+    def generate_activity(self, request: GenerateActivityRequest) -> ActivityResponse:
+        """
+        Generates a full learning activity based on the request.
+    
+        Orchestration steps:
+        1. Load Prompt Config (via PromptManager)
+        2. Render System Prompt (via PromptManager)
+        3. Call Vertex AI (via VertexAIClient)
+        4. Validate Response (via Pydantic)
+        5. Return structured response
+        """
+        start_time = time.time()
+        logger.info(f"Starting generation for topic='{request.topic}' level='{request.level}'")
+    
+        try:
+            # 1 & 2. Load and Render Prompt
+            # We fetch the config first to get generation settings (temp, tokens) if overridden
+            config = self.prompt_manager.get_config(request.level, request.variant)
+    
+            system_prompt = self.prompt_manager.render_system_prompt(
+                level=request.level,
+                topic=request.topic,
+                variant=request.variant
+            )
+    
+            # 3. Call Vertex AI
+            # Use config generation settings if present, else defaults
+            gen_config = config.generation_config
+            temperature = gen_config.temperature if gen_config else None
+            max_tokens = gen_config.max_output_tokens if gen_config else None
+    
+            # Get schema from Pydantic model
+            response_schema = ContentModel.model_json_schema()
+    
+            raw_response = self.ai_client.generate_content(
+                prompt=system_prompt,
+                schema=response_schema,
+                temperature=temperature,
+                max_output_tokens=max_tokens
+            )
+    
+            # 4. Validate Response
+            # Clean up potential markdown code blocks if the model behaves unexpectedly (though response_mime_type should fix this)
+            clean_json = raw_response.strip()
+            if clean_json.startswith("```json"):
+                clean_json = clean_json[7:-3].strip()
+            elif clean_json.startswith("```"):
+                clean_json = clean_json[3:-3].strip()
+    
+            try:
+                content_data = json.loads(clean_json)
+>               validated_content = ContentModel(**content_data)
+E               pydantic_core._pydantic_core.ValidationError: 2 validation errors for ContentModel
+E               text_content
+E                 String should have at least 50 characters [type=string_too_short, input_value='זֶה כֶּלֶב חָ...ֵב לֶאֱכוֹל.', input_type=str]
+E                   For further information visit https://errors.pydantic.dev/2.12/v/string_too_short
+E               vocabulary_list
+E                 List should have at least 3 items after validation, not 1 [type=too_short, input_value=[{'hebrew': 'כלב', 'english': 'Dog'}], input_type=list]
+E                   For further information visit https://errors.pydantic.dev/2.12/v/too_short
+
+backend/services/content_generator.py:77: ValidationError
+------------------------------ Captured log call -------------------------------
+ERROR    backend.services.content_generator:content_generator.py:86 Content Validation Failed: 2 validation errors for ContentModel
+text_content
+  String should have at least 50 characters [type=string_too_short, input_value='זֶה כֶּלֶב חָ...ֵב לֶאֱכוֹל.', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.12/v/string_too_short
+vocabulary_list
+  List should have at least 3 items after validation, not 1 [type=too_short, input_value=[{'hebrew': 'כלב', 'english': 'Dog'}], input_type=list]
+    For further information visit https://errors.pydantic.dev/2.12/v/too_short
+=========================== short test summary info ============================
+FAILED tests/unit/test_content_generator.py::test_generate_activity_success
+========================= 1 failed, 4 passed in 3.26s ==========================

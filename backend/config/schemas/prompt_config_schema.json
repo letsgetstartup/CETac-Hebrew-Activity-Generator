@@ -1,0 +1,221 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Prompt Configuration Schema",
+    "description": "Schema for CEFR-level specific prompt configurations",
+    "type": "object",
+    "required": [
+        "level",
+        "version",
+        "morphological_constraints",
+        "system_prompt_template"
+    ],
+    "properties": {
+        "level": {
+            "type": "string",
+            "enum": [
+                "A1",
+                "A2",
+                "B1",
+                "B2",
+                "C1"
+            ],
+            "description": "CEFR proficiency level"
+        },
+        "version": {
+            "type": "string",
+            "pattern": "^\\d+\\.\\d+\\.\\d+$",
+            "description": "Semantic version (e.g., 1.2.0)"
+        },
+        "author": {
+            "type": "string",
+            "description": "Configuration author (name or email)"
+        },
+        "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Creation timestamp"
+        },
+        "description": {
+            "type": "string",
+            "description": "Human-readable description of this configuration"
+        },
+        "morphological_constraints": {
+            "type": "object",
+            "required": [
+                "allowed_tenses",
+                "allowed_binyanim",
+                "max_sentence_length",
+                "niqqud_required"
+            ],
+            "properties": {
+                "allowed_tenses": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "enum": [
+                            "PRESENT",
+                            "PAST",
+                            "FUTURE",
+                            "IMPERATIVE",
+                            "INFINITIVE"
+                        ]
+                    },
+                    "minItems": 1,
+                    "description": "Allowed verb tenses for this level"
+                },
+                "allowed_binyanim": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "enum": [
+                            "PAAL",
+                            "NIFAL",
+                            "PIEL",
+                            "PUAL",
+                            "HIFIL",
+                            "HUFAL",
+                            "HITPAEL"
+                        ]
+                    },
+                    "minItems": 1,
+                    "description": "Allowed verb patterns (binyanim)"
+                },
+                "max_sentence_length": {
+                    "type": "integer",
+                    "minimum": 5,
+                    "maximum": 30,
+                    "description": "Maximum words per sentence"
+                },
+                "niqqud_required": {
+                    "type": "boolean",
+                    "description": "Whether full niqqud is required"
+                },
+                "allowed_gender_forms": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "enum": [
+                            "MASCULINE",
+                            "FEMININE",
+                            "PLURAL_MASCULINE",
+                            "PLURAL_FEMININE"
+                        ]
+                    },
+                    "description": "Allowed gender/number forms"
+                }
+            }
+        },
+        "system_prompt_template": {
+            "type": "string",
+            "minLength": 50,
+            "description": "Jinja2 template for system prompt"
+        },
+        "vocabulary_whitelist": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            },
+            "description": "Paths to vocabulary files or inline word lists"
+        },
+        "few_shot_examples": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "required": [
+                    "topic",
+                    "activity"
+                ],
+                "properties": {
+                    "topic": {
+                        "type": "string"
+                    },
+                    "activity": {
+                        "type": "object",
+                        "description": "Example activity JSON matching ContentModel schema"
+                    }
+                }
+            },
+            "description": "Few-shot learning examples"
+        },
+        "bloom_taxonomy_rules": {
+            "type": "object",
+            "properties": {
+                "distribution": {
+                    "type": "object",
+                    "properties": {
+                        "Remembering": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 1
+                        },
+                        "Understanding": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 1
+                        },
+                        "Applying": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 1
+                        },
+                        "Analyzing": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 1
+                        }
+                    },
+                    "description": "Target distribution of question types (should sum to 1.0)"
+                }
+            }
+        },
+        "generation_config": {
+            "type": "object",
+            "properties": {
+                "temperature": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 2
+                },
+                "max_output_tokens": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 8192
+                },
+                "top_p": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                },
+                "top_k": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 100
+                }
+            },
+            "description": "Vertex AI generation configuration overrides"
+        },
+        "validation_rules": {
+            "type": "object",
+            "properties": {
+                "min_text_length": {
+                    "type": "integer",
+                    "minimum": 50
+                },
+                "max_text_length": {
+                    "type": "integer",
+                    "maximum": 1000
+                },
+                "min_questions": {
+                    "type": "integer",
+                    "minimum": 3,
+                    "maximum": 10
+                },
+                "max_questions": {
+                    "type": "integer",
+                    "minimum": 3,
+                    "maximum": 10
+                }
+            }
+        }
+    }
+}
